@@ -4,7 +4,6 @@ import "dotenv/config";
 const { MONGO_URI } = process.env;
 
 const connect = () => {
-  // Connecting to the database
   mongoose
     .connect(MONGO_URI)
     .then(() => {
