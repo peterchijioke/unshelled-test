@@ -1,81 +1,39 @@
-import User from "../model/user.js";
+import Seller from "../model/seller.js";
+import Order from "../model/order.js";
 export function home(req, res) {
   res.status(200).send("Welcome 🙌 ");
 }
 const login = async (req, res) => {
-  // Our login logic starts here
   try {
-    // Get user input
-    const { email, password } = req.body;
-
-    // Validate user input
-    if (!(email && password)) {
+    const { seller_id, seller_zip_code_prefix } = req.body;
+    if (!seller_id && !seller_zip_code_prefix) {
       res.status(400).send("All input is required");
+      return;
     }
-    // Validate if user exist in our database
-    const user = await User.findOne({ email });
-
-    if (user && (await bcrypt.compare(password, user.password))) {
-      // Create token
-      const token = jwt.sign(
-        { user_id: user._id, email },
-        process.env.TOKEN_KEY,
-        {
-          expiresIn: "2h",
-        }
-      );
-
-      // save user token
-      user.token = token;
-
-      // user
-      res.status(200).json(user);
+    const seller = await Seller.findOne({ seller_id });
+    if (seller && seller.seller_zip_code_prefix === seller_zip_code_prefix) {
+      res.status(200).json(seller);
+      return;
     }
     res.status(400).send("Invalid Credentials");
   } catch (err) {
     console.log(err);
   }
-  // Our register logic ends here
 };
-const register = async (req, res) => {
-  // Our register logic starts here
+
+const updateSellerDetails = async (req, res) => {
+  const seller_id = req.headers.authorization.split(" ")[1];
+  const { seller_city, seller_state } = req.body;
+  const filter = { seller_id };
+  const update = { seller_city, seller_state };
   try {
-    const { first_name, last_name, email, password } = req.body;
-
-    if (!(email && password && first_name && last_name)) {
-      res.status(400).send("All input is required");
-    }
-
-    const oldUser = await User.findOne({ email });
-
-    if (oldUser) {
-      return res.status(409).send("User Already Exist. Please Login");
-    }
-
-    encryptedPassword = await bcrypt.hash(password, 10);
-
-    const user = await User.create({
-      first_name,
-      last_name,
-      email: email.toLowerCase(),
-      password: encryptedPassword,
+    const seller = await Seller.findOneAndUpdate(filter, update, {
+      returnOriginal: false,
     });
-
-    // Create token
-    const token = jwt.sign(
-      { user_id: user._id, email },
-      process.env.TOKEN_KEY,
-      {
-        expiresIn: "2h",
-      }
-    );
-
-    user.token = token;
-
-    res.status(201).json(user);
-  } catch (err) {
-    console.log(err);
+    res.status(200).json(seller);
+  } catch (error) {
+    console.log(error);
   }
 };
 
-export { login, register };
+export { login, updateSellerDetails };

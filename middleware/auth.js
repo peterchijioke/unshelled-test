@@ -1,21 +1,25 @@
-import { verify } from "jsonwebtoken";
+import Seller from "../model/seller.js";
+const verifyUser = (req, res, next) => {
+  if (typeof req.headers.authorization !== "string") {
+    return res
+      .status(403)
+      .send("Please pass in a valid seller user name as token");
+  }
 
-const config = process.env;
+  const seller = req.headers.authorization.split(" ")[1];
 
-const verifyToken = (req, res, next) => {
-  const token =
-    req.body.token || req.query.token || req.headers["x-access-token"];
-
-  if (!token) {
-    return res.status(403).send("A token is required for authentication");
+  if (!seller) {
+    return res.status(403).send("A seller id is required for authentication");
   }
   try {
-    const decoded = verify(token, config.TOKEN_KEY);
-    req.user = decoded;
+    const confirmed = Seller.findOne({ seller });
+    if (!confirmed) {
+      return res.status(401).send("Invalid Seller");
+    }
   } catch (err) {
-    return res.status(401).send("Invalid Token");
+    return res.status(401).send("Invalid Seller");
   }
   return next();
 };
 
-export default verifyToken;
+export default verifyUser;
