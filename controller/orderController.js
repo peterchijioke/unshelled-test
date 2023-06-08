@@ -40,7 +40,7 @@ const orderItem = async (req, res) => {
 
 const deletOrderItem = async (req, res) => {
   try {
-    const order_id = req.param.id;
+    const order_id = req.params.id;
     if (!order_id) {
       return res.status(400).json({ message: "order_id is required" });
     }

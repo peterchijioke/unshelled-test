@@ -17,7 +17,7 @@ route.use(express.json());
 route.use(express.urlencoded({ extended: true }));
 route.post("/login", login);
 route.get("/order_items", auth, orderItems);
-route.get("/order_items/:id", auth, deletOrderItem);
+route.delete("/order_items/:id", auth, deletOrderItem);
 route.get("/order_item", auth, orderItem);
 
 export { route };
