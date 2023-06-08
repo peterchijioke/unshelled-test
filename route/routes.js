@@ -6,7 +6,7 @@ connect();
 import express from "express";
 
 import auth from "../middleware/auth.js";
-import { home, login, register } from "../controller/eStore.js";
+import { home, login, register } from "../controller/userController.js";
 
 const route = express();
 route.use(express.json());
