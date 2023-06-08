@@ -1,5 +1,6 @@
 import Order from "../model/order.js";
 
+// Get pagginated order items
 const orderItems = async (req, res) => {
   const { page = 1, limit = 10 } = req.query;
 
@@ -20,14 +21,34 @@ const orderItems = async (req, res) => {
     console.log(error);
   }
 };
+
+// Get single order item
 const orderItem = async (req, res) => {
   try {
-    const order_id = req.params.id;
-    const data = await Order.findOne({ order_id }).sort({ price: 1 });
+    const order_id = req.query.id;
+    if (!order_id) {
+      return res.status(400).json({ message: "order_id is required" });
+    }
+    const data = await Order.findOne({ order_id });
     return res.status(200).json(data);
   } catch (error) {
     console.log(error);
   }
 };
 
-export { orderItems, orderItem };
+// Delete an order Item
+
+const deletOrderItem = async (req, res) => {
+  try {
+    const order_id = req.param.id;
+    if (!order_id) {
+      return res.status(400).json({ message: "order_id is required" });
+    }
+    const data = await Order.deleteOne({ order_id });
+    return res.status(200).json(data);
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+export { orderItems, orderItem, deletOrderItem };

@@ -4,6 +4,12 @@ import Seller from "../model/seller.js";
 const config = process.env;
 
 const verifyUser = (req, res, next) => {
+  if (typeof req.headers.authorization !== "string") {
+    return res
+      .status(403)
+      .send("Please pass in a valid seller user name as token");
+  }
+
   const seller = req.headers.authorization.split(" ")[1];
 
   if (!seller) {
