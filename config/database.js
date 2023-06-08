@@ -1,14 +1,12 @@
+import mongoose from "mongoose";
+import "dotenv/config";
+
 const { MONGO_URI } = process.env;
 
-exports.connect = () => {
+const connect = () => {
   // Connecting to the database
   mongoose
-    .connect(MONGO_URI, {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-      useCreateIndex: true,
-      useFindAndModify: false,
-    })
+    .connect(MONGO_URI)
     .then(() => {
       console.log("Successfully connected to database");
     })
@@ -18,3 +16,5 @@ exports.connect = () => {
       process.exit(1);
     });
 };
+
+export { connect };
