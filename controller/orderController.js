@@ -13,25 +13,19 @@ const orderItems = async (req, res) => {
       .skip((page - 1) * limit)
       .exec();
 
-    const data = query.map(async (item) => {
-      const product = await Product.findOne({ product_id: item.product_id });
-      if (product.product_category_name) {
+    const data = await Promise.all(
+      query.map(async (item) => {
+        const product = await Product.findOne({ product_id: item.product_id });
         return {
           id: item.order_item_id,
           product_id: item.product_id,
-          product_category: product.product_category_name,
+          product_category: product.product_category_name ?? null,
           price: item.price,
           date: item.shipping_limit_date,
         };
-      }
-      return {
-        id: item.order_item_id,
-        product_id: item.product_id,
-        product_category: null,
-        price: item.price,
-        date: item.shipping_limit_date,
-      };
-    });
+      })
+    );
+
     return res.status(200).json({
       data,
       total: await Order.count(),
