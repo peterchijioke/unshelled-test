@@ -6,5 +6,4 @@ const sellerSchema = new Schema({
   seller_city: { type: String, default: null },
   seller_state: { type: String, default: null },
 });
-
 export default model("olist_sellers_dataset", sellerSchema);

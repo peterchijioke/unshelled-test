@@ -1,18 +1,15 @@
 import Seller from "../model/seller.js";
+import Order from "../model/order.js";
 export function home(req, res) {
   res.status(200).send("Welcome 🙌 ");
 }
 const login = async (req, res) => {
   try {
-    // Get user input
     const { seller_id, seller_zip_code_prefix } = req.body;
-
-    // Validate user input
     if (!seller_id && !seller_zip_code_prefix) {
       res.status(400).send("All input is required");
       return;
     }
-    // Validate if seller exist
     const seller = await Seller.findOne({ seller_id });
     if (seller && seller.seller_zip_code_prefix === seller_zip_code_prefix) {
       res.status(200).json(seller);
@@ -24,6 +21,23 @@ const login = async (req, res) => {
   }
 };
 
-const orderItems = (req, res) => {};
+const orderItems = async (req, res) => {
+  try {
+    const seller_id = req.headers["x-access-token"];
+    const data = await Order.find({ seller_id });
+    console.log(data);
+  } catch (error) {
+    console.log(error);
+  }
+};
+const orderItem = async (req, res) => {
+  try {
+    const seller_id = req.headers["x-access-token"];
+    const id = req.params.id;
+    const data = await Order.find({ id });
+  } catch (error) {
+    console.log(error);
+  }
+};
 
-export { login, orderItems };
+export { login, orderItems, orderItem };

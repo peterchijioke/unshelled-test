@@ -1,20 +1,23 @@
 import { verify } from "jsonwebtoken";
+import Seller from "../model/seller.js";
 
 const config = process.env;
 
-const verifyToken = (req, res, next) => {
-  const token = req.body.seller_id || req.query.seller_id;
+const verifyUser = (req, res, next) => {
+  const seller = req.headers.authorization.split(" ")[1];
 
-  if (!token) {
-    return res.status(403).send("A token is required for authentication");
+  if (!seller) {
+    return res.status(403).send("A seller id is required for authentication");
   }
   try {
-    const decoded = verify(token, config.TOKEN_KEY);
-    req.user = decoded;
+    const confirmed = Seller.findOne({ seller });
+    if (!confirmed) {
+      return res.status(401).send("Invalid Seller");
+    }
   } catch (err) {
-    return res.status(401).send("Invalid Token");
+    return res.status(401).send("Invalid Seller");
   }
   return next();
 };
 
-export default verifyToken;
+export default verifyUser;
