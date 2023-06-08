@@ -6,7 +6,7 @@ const orderSchema = new Schema({
   seller_id: { type: String, unique: true },
   shipping_limit_date: { type: Date, default: null },
   price: { type: Number },
-  freight_value: { type: mongoose.Types.Decimal128 },
+  freight_value: { type: Number },
 });
 
 export default model("olist_order_items_dataset", orderSchema);
