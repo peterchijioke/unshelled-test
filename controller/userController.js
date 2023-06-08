@@ -21,23 +21,19 @@ const login = async (req, res) => {
   }
 };
 
-const orderItems = async (req, res) => {
+const updateSellerDetails = async (req, res) => {
+  const seller_id = req.headers.authorization.split(" ")[1];
+  const { seller_city, seller_state } = req.body;
+  const filter = { seller_id };
+  const update = { seller_city, seller_state };
   try {
-    const seller_id = req.headers["x-access-token"];
-    const data = await Order.find({ seller_id });
-    console.log(data);
-  } catch (error) {
-    console.log(error);
-  }
-};
-const orderItem = async (req, res) => {
-  try {
-    const seller_id = req.headers["x-access-token"];
-    const id = req.params.id;
-    const data = await Order.find({ id });
+    const seller = await Seller.findOneAndUpdate(filter, update, {
+      returnOriginal: false,
+    });
+    res.status(200).json(seller);
   } catch (error) {
     console.log(error);
   }
 };
 
-export { login, orderItems, orderItem };
+export { login, updateSellerDetails };
