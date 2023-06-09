@@ -11,7 +11,8 @@ const orderItems = async (req, res) => {
     const queryPromise = Order.find({ seller_id })
       .sort({ price: -1 })
       .skip(skip)
-      .limit(limit);
+      .limit(limit)
+      .exec();
     const [count, query] = await Promise.all([countPromise, queryPromise]);
     const pageCount = count / limit;
     const data = await Promise.all(
