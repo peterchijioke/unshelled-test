@@ -7,7 +7,7 @@ const orderItems = async (req, res) => {
   const skip = (Number(page) - 1) * Number(limit);
   try {
     const seller_id = req.headers.authorization.split(" ")[1];
-    const countPromise = Order.estimatedDocumentCount({ seller_id });
+    const countPromise = Order.count({ seller_id });
     const queryPromise = Order.find({ seller_id })
       .sort({ price: -1 })
       .skip(skip)
