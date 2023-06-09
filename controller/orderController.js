@@ -3,21 +3,23 @@ import Product from "../model/product.js";
 
 // Get pagginated order items
 const orderItems = async (req, res) => {
-  const { page = 1, limit = 10 } = req.query;
-
+  const { page = 1, limit = 20 } = req.query;
+  const skip = (Number(page) - 1) * Number(limit);
   try {
     const seller_id = req.headers.authorization.split(" ")[1];
-    const query = await Order.find({ seller_id })
+    const countPromise = Order.count({ seller_id });
+    const queryPromise = Order.find({ seller_id })
       .sort({ price: -1 })
-      .limit(limit * 1)
-      .skip((page - 1) * limit)
+      .skip(skip)
+      .limit(limit)
       .exec();
-
+    const [count, query] = await Promise.all([countPromise, queryPromise]);
+    const pageCount = count / limit;
     const data = await Promise.all(
       query.map(async (item) => {
         const product = await Product.findOne({ product_id: item.product_id });
         return {
-          id: item.order_item_id,
+          id: item.order_id,
           product_id: item.product_id,
           product_category: product.product_category_name ?? null,
           price: item.price,
@@ -28,9 +30,9 @@ const orderItems = async (req, res) => {
 
     return res.status(200).json({
       data,
-      total: await Order.count(),
-      limit,
-      offset: page,
+      total: count,
+      limit: Number(limit),
+      offset: Math.floor(pageCount),
     });
   } catch (error) {
     console.log(error);
@@ -52,7 +54,6 @@ const orderItem = async (req, res) => {
 };
 
 // Delete an order Item
-
 const deletOrderItem = async (req, res) => {
   try {
     const order_id = req.params.id;
