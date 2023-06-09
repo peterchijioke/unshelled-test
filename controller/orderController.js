@@ -3,7 +3,7 @@ import Product from "../model/product.js";
 
 // Get pagginated order items
 const orderItems = async (req, res) => {
-  const { page = 1, limit = 10 } = req.query;
+  const { page = 1, limit = 15 } = req.query;
 
   try {
     const seller_id = req.headers.authorization.split(" ")[1];
