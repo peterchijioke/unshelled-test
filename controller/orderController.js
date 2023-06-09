@@ -4,16 +4,16 @@ import Product from "../model/product.js";
 // Get pagginated order items
 const orderItems = async (req, res) => {
   const { page = 1, limit = 20 } = req.query;
-
+  const skip = (Number(page) - 1) * Number(limit);
   try {
     const seller_id = req.headers.authorization.split(" ")[1];
-    const count = await Order.estimatedDocumentCount({ seller_id });
-    const pageCount = count / limit;
-    const query = await Order.find({ seller_id })
+    const countPromise = Order.estimatedDocumentCount({ seller_id });
+    const queryPromise = Order.find({ seller_id })
       .sort({ price: -1 })
-      .limit(limit)
-      .skip((Number(page) - 1) * Number(limit))
-      .exec();
+      .skip(skip)
+      .limit(limit);
+    const [count, query] = await Promise.all([countPromise, queryPromise]);
+    const pageCount = count / limit;
     const data = await Promise.all(
       query.map(async (item) => {
         const product = await Product.findOne({ product_id: item.product_id });
@@ -30,8 +30,8 @@ const orderItems = async (req, res) => {
     return res.status(200).json({
       data,
       total: count,
-      limit,
-      offset: pageCount,
+      limit: Number(limit),
+      offset: Math.floor(pageCount),
     });
   } catch (error) {
     console.log(error);
