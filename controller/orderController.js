@@ -3,10 +3,12 @@ import Product from "../model/product.js";
 
 // Get pagginated order items
 const orderItems = async (req, res) => {
-  const { page = 1, limit = 15 } = req.query;
+  const { page = 1, limit = 20 } = req.query;
 
   try {
     const seller_id = req.headers.authorization.split(" ")[1];
+    const count = await Order.estimatedDocumentCount({ seller_id });
+    const pageCount = count / limit;
     const query = await Order.find({ seller_id })
       .sort({ price: -1 })
       .limit(limit)
@@ -27,9 +29,9 @@ const orderItems = async (req, res) => {
 
     return res.status(200).json({
       data,
-      total: await Order.count(),
+      total: count,
       limit,
-      offset: page,
+      offset: pageCount,
     });
   } catch (error) {
     console.log(error);
