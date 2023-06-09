@@ -10,7 +10,7 @@ const orderItems = async (req, res) => {
     const query = await Order.find({ seller_id })
       .sort({ price: -1 })
       .limit(limit * 1)
-      .skip((page - 1) * limit)
+      .skip((Number(page) - 1) * Number(limit))
       .exec();
 
     const data = await Promise.all(
