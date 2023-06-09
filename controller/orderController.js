@@ -54,7 +54,6 @@ const orderItem = async (req, res) => {
 };
 
 // Delete an order Item
-
 const deletOrderItem = async (req, res) => {
   try {
     const order_id = req.params.id;
