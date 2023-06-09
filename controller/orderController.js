@@ -19,7 +19,7 @@ const orderItems = async (req, res) => {
       query.map(async (item) => {
         const product = await Product.findOne({ product_id: item.product_id });
         return {
-          id: item.order_item_id,
+          id: item.order_id,
           product_id: item.product_id,
           product_category: product.product_category_name ?? null,
           price: item.price,
