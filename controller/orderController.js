@@ -9,10 +9,9 @@ const orderItems = async (req, res) => {
     const seller_id = req.headers.authorization.split(" ")[1];
     const query = await Order.find({ seller_id })
       .sort({ price: -1 })
-      .limit(limit * 1)
+      .limit(limit)
       .skip((Number(page) - 1) * Number(limit))
       .exec();
-
     const data = await Promise.all(
       query.map(async (item) => {
         const product = await Product.findOne({ product_id: item.product_id });
