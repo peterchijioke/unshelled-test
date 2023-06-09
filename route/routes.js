@@ -13,11 +13,20 @@ dotenv.config();
 connect();
 const route = express();
 route.use(express.json());
+route.use(function (req, res, next) {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header(
+    "Access-Control-Allow-Headers",
+    "Origin, X-Api-Key, X-Requested-With, Content-Type, Accept, Authorization"
+  );
+  next();
+});
+
 route.use(express.urlencoded({ extended: true }));
-route.post("/login", login);
-route.post("/update-seller", auth, updateSellerDetails);
 route.get("/order_items", auth, orderItems);
-route.delete("/order_items/:id", auth, deletOrderItem);
 route.get("/order_item", auth, orderItem);
+route.post("/login", login);
+route.post("/account", auth, updateSellerDetails);
+route.delete("/order_items/:id", auth, deletOrderItem);
 
 export { route };
